@@ -9,9 +9,10 @@ function M.init(config)
 	config.line_height = 1.2
 	config.tab_max_width = 32
 	config.switch_to_last_active_tab_when_closing_tab = true
-	config.font = wezterm.font("Fira Code")
+	-- enable ligatures like in Fira Code font
+	config.font = wezterm.font("Fira Code", {})
 	config.color_scheme = "Catppuccin Macchiato"
-	config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+	config.harfbuzz_features = { "calt=1", "clig=1", "liga=1" }
 	config.window_padding = {
 		left = 0,
 		right = 0,

@@ -27,7 +27,6 @@ return {
 				operators = {},
 			},
 			integrations = {
-				mason = true,
 				gitsigns = true,
 				nvimtree = true,
 				which_key = true,

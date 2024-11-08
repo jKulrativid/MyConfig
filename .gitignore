@@ -1,0 +1,7 @@
+# block all by default
+/*
+
+# allow only nvim and wezterm config
+!nvim/
+!wezterm/
+!.gitignore

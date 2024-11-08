@@ -2,7 +2,7 @@ return {
   "iamcco/markdown-preview.nvim",
   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
   ft = { "markdown" },
-  -- don't forget "brew install mdp"
+  -- Don't forget "brew install mdp. If this doesn't work, type `:call mkdp#util#install()` in the normal mode."
   build = function() vim.fn["mkdp#util#install"]() end,
   init = function()
     vim.g.mkdp_filetypes = { "markdown" }

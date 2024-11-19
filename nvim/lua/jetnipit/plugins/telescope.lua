@@ -1,4 +1,4 @@
-function vim.getVisualSelection()
+function get_visual_selection()
   vim.cmd('noau normal! "vy"')
   local text = vim.fn.getreg("v")
   vim.fn.setreg("v", {})
@@ -24,68 +24,71 @@ return {
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
   },
   -- stylua: ignore
-  keys = {
-    { "<leader>f",  "",                                   desc = "Find" },
-    { "<leader>fb", require("telescope.builtin").buffers, desc = "Buffers" },
-    {
-      "<leader>fm",
-      function()
-        local action_state = require("telescope.actions.state")
-        local actions = require("telescope.actions")
 
-        require("telescope.pickers")
-            .new({}, {
-              prompt_title = "Modified Buffers",
-              finder = require("telescope.finders").new_table({
-                results = vim.tbl_filter(function(buf)
-                  return vim.bo[buf].modified
-                end, vim.api.nvim_list_bufs()),
-                entry_maker = function(buf)
-                  local filename = vim.api.nvim_buf_get_name(buf)
-                  filename = vim.fn.fnamemodify(filename, ":p:~:.")
-                  return {
-                    value = buf,
-                    display = string.format("%d: %s", buf, filename),
-                    ordinal = filename,
-                  }
-                end,
-              }),
-              sorter = require("telescope.sorters").get_generic_fuzzy_sorter(),
-              attach_mappings = function(prompt_bufnr, _)
-                actions.select_default:replace(function()
-                  local selection = action_state.get_selected_entry()
-                  actions.close(prompt_bufnr)
-                  vim.api.nvim_set_current_buf(selection.value)
-                end)
-                return true
-              end,
-            })
-            :find()
-      end,
-      desc = "Modified buffers",
-    },
-    { "<leader>ff", require("telescope.builtin").find_files, desc = "File" },
-    { "<leader>fr", require("telescope.builtin").oldfiles,   desc = "Recent files" },
-    { "<leader>fs", require("telescope.builtin").live_grep,  desc = "word" },
-    {
-      "<leader>fs",
-      function()
-        local text = vim.getVisualSelection()
-        require("telescope.builtin").live_grep({ default_text = text })
-      end,
-      desc = "word",
-      mode = "x"
-    },
-    { "<leader>fd", require("telescope.builtin").diagnostics,                                desc = "Diagnostics" },
-    { "<leader>fB", function() require("telescope").extensions.dap.list_breakpoints({}) end, desc = "Breakpoints" },
-
-    { "<leader>gs", require("telescope.builtin").git_status,                                 desc = "Git status" },
-    { "<leader>gb", require("telescope.builtin").git_branches,                               desc = "Checkout branch" },
-    { "<leader>gc", require("telescope.builtin").git_commits,                                desc = "Checkout commit" },
-    { "<leader>gC", require("telescope.builtin").git_bcommits,                               desc = "Checkout commit(for current file)" },
-  },
   config = function()
     local telescope = require("telescope")
+    local builtin = require("telescope.builtin")
+
+    -- Find group
+    vim.keymap.set('n', '<leader>f', '', { desc = 'Find' })
+    vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Buffers' })
+    vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find Files' })
+    vim.keymap.set('n', '<leader>fr', builtin.oldfiles, { desc = 'Recent Files' })
+
+    -- Search group
+    vim.keymap.set('n', '<leader>fs', builtin.live_grep, { desc = 'Search Words' })
+    vim.keymap.set('x', '<leader>fs', function()
+      local text = get_visual_selection()
+      telescope.live_grep({ default_text = text })
+    end, { desc = 'Search Selected Word' })
+
+    vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Diagnostics' })
+
+    -- Custom modified buffers finder
+    vim.keymap.set('n', '<leader>fm', function()
+      local action_state = require("telescope.actions.state")
+      local actions = require("telescope.actions")
+
+      require("telescope.pickers")
+          .new({}, {
+            prompt_title = "Modified Buffers",
+            finder = require("telescope.finders").new_table({
+              results = vim.tbl_filter(function(buf)
+                return vim.bo[buf].modified
+              end, vim.api.nvim_list_bufs()),
+              entry_maker = function(buf)
+                local filename = vim.api.nvim_buf_get_name(buf)
+                filename = vim.fn.fnamemodify(filename, ":p:~:.")
+                return {
+                  value = buf,
+                  display = string.format("%d: %s", buf, filename),
+                  ordinal = filename,
+                }
+              end,
+            }),
+            sorter = require("telescope.sorters").get_generic_fuzzy_sorter(),
+            attach_mappings = function(prompt_bufnr, _)
+              actions.select_default:replace(function()
+                local selection = action_state.get_selected_entry()
+                actions.close(prompt_bufnr)
+                vim.api.nvim_set_current_buf(selection.value)
+              end)
+              return true
+            end,
+          })
+          :find()
+    end, { desc = 'Modified Buffers' })
+
+    -- Debugger Breakpoints
+    vim.keymap.set('n', '<leader>fB', function()
+      telescope.extensions.dap.list_breakpoints({})
+    end, { desc = 'Breakpoints' })
+
+    -- Git group
+    vim.keymap.set('n', '<leader>gs', builtin.git_status, { desc = 'Git Status' })
+    vim.keymap.set('n', '<leader>gb', builtin.git_branches, { desc = 'Checkout Branch' })
+    vim.keymap.set('n', '<leader>gc', builtin.git_commits, { desc = 'Checkout Commit' })
+    vim.keymap.set('n', '<leader>gC', builtin.git_bcommits, { desc = 'Checkout Commit (Current File)' })
 
     telescope.setup({
       defaults = {

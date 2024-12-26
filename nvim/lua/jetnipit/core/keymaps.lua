@@ -10,6 +10,11 @@ keymap.set("n",  "<leader>nh", ":nohl<CR>", { desc = "Clear search highlight" })
 keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
 keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
 
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down half screen" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up half screen" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next word" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous word" })
+
 -- window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically
 keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" }) -- split window horizontally

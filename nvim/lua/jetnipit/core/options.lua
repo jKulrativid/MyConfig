@@ -33,3 +33,7 @@ opt.clipboard:append("unnamedplus") -- use system clipboard as default register
 -- split window
 opt.splitright = true -- split vertical window on the right
 opt.splitbelow = true -- split horizontal window on the bottom
+
+vim.diagnostic.config({
+    virtual_text = false,
+})

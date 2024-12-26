@@ -76,8 +76,9 @@ return {
             capabilities = capabilities,
         }
 
-        lspconfig.ghcide.setup({
+        lspconfig.hls.setup({
             capabilities = capabilities,
+            filetypes = { 'haskell', 'lhaskell', 'cabal' },
         })
 
         -- key binding config --

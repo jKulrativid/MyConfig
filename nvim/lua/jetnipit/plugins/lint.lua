@@ -7,21 +7,15 @@ return {
         vim.g.lint_log_level = "debug"
 
         lint_config.linters_by_ft = {
-            javascript = { "eslint", "cspell" },
-            typescript = { "eslint", "cspell" },
-            javascriptreact = { "eslint", "cspell" },
-            typescriptreact = { "eslint", "cspell" },
-            lua = { "cspell" },
-            svelte = { "eslint", "cspell" },
-            python = { "pylint", "cspell" },
-            go = { "golangcilint", "cspell" },
-            markdown = { "markdownlint-cli2", "cspell" }
+            javascript = { "eslint" },
+            typescript = { "eslint" },
+            javascriptreact = { "eslint" },
+            typescriptreact = { "eslint" },
+            svelte = { "eslint" },
+            python = { "pylint" },
+            go = { "golangcilint" },
+            markdown = { "markdownlint-cli2" }
         }
-
-        lint_config.linters.cspell = require("lint.util").wrap(lint_config.linters.cspell, function(diagnostic)
-            diagnostic.severity = vim.diagnostic.severity.HINT
-            return diagnostic
-        end)
 
         lint_config.linters.golangcilint.args = {
             "run",
@@ -36,9 +30,10 @@ return {
             end,
         }
 
-        vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
+        vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "BufReadPre", "InsertLeave" }, {
+            group = vim.api.nvim_create_augroup("RunLinter", { clear = true }),
             callback = function()
-                require('lint').try_lint()
+                lint_config.try_lint("cspell")
             end,
         })
     end,
@@ -46,13 +41,10 @@ return {
         {
             "<leader>cl",
             function()
-                local bufnr = vim.api.nvim_get_current_buf()
-                if vim.api.nvim_buf_is_valid(bufnr) then
-                    if vim.diagnostic.is_enabled() then
-                        vim.diagnostic.enable(false)
-                    else
-                        vim.diagnostic.enable(true)
-                    end
+                if vim.diagnostic.is_enabled() then
+                    vim.diagnostic.enable(false)
+                else
+                    vim.diagnostic.enable(true)
                 end
             end,
             desc = "Lint",

@@ -2,6 +2,6 @@
   "version": "0.2",
   "language": "en",
   "dictionaries": ["lua"],
-  "ignoreWordsFile": "./cspell-ignore.txt",
-  "ignorePaths": [".git", "cspell.json", "cspell-ignore.txt"]
+  "ignoreWordsFile": "cspell-ignore.txt",
+  "ignorePaths": [".git"]
 }

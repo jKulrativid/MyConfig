@@ -25,14 +25,14 @@ return {
 
             conform.setup({
                 formatters_by_ft = {
-                    svelte = { "prettier" },
-                    css = { "prettier" },
-                    html = { "prettier" },
-                    json = { "prettier" },
-                    yaml = { "prettier" },
-                    markdown = { "prettier" },
-                    graphql = { "prettier" },
-                    liquid = { "prettier" },
+                    svelte = { "prettierd" },
+                    css = { "prettierd" },
+                    html = { "prettierd" },
+                    json = { "prettierd" },
+                    yaml = { "prettierd" },
+                    markdown = { "prettierd" },
+                    graphql = { "prettierd" },
+                    liquid = { "prettierd" },
                     lua = { "stylua" },
                     go = { "goimports-reviser", "golines" },
                     python = { "isort", "black" },

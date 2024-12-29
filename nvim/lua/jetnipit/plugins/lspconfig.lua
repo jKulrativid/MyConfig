@@ -76,8 +76,10 @@ return {
             capabilities = capabilities,
         }
 
+        local haskell_capabilities = cmp_nvim_lsp.default_capabilities()
+        haskell_capabilities.textDocument.semanticsToken = nil
         lspconfig.hls.setup({
-            capabilities = capabilities,
+            capabilities = haskell_capabilities,
             filetypes = { 'haskell', 'lhaskell', 'cabal' },
         })
 

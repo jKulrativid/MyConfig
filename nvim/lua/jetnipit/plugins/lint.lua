@@ -33,7 +33,7 @@ return {
         vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "BufReadPre", "InsertLeave" }, {
             group = vim.api.nvim_create_augroup("RunLinter", { clear = true }),
             callback = function()
-                lint_config.try_lint("cspell")
+                lint_config.try_lint("codespell")
             end,
         })
     end,

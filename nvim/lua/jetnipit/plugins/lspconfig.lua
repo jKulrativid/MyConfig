@@ -1,8 +1,18 @@
+local function get_vscode_settings()
+    local settings_file = vim.fn.getcwd() .. '/.vscode/settings.json'
+    if vim.fn.filereadable(settings_file) == 1 then
+        local contents = vim.fn.readfile(settings_file)
+        local settings = vim.fn.json_decode(table.concat(contents, '\n'))
+        return settings
+    end
+    return {}
+end
+
 return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-nvim-lsp", "b0o/schemastore.nvim",
         { "antosha417/nvim-lsp-file-operations", config = true },
         { "folke/neodev.nvim",                   opts = {} },
     },
@@ -23,15 +33,57 @@ return {
             vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
         end
 
+        local vscode_settings = get_vscode_settings()
+        if vscode_settings == nil then
+            vscode_settings = {}
+        end
+
         lspconfig.lua_ls.setup({
-            capcabilities = capabilities,
+            capabilities = capabilities,
+            on_init = function(client)
+                if client.workspace_folders then
+                    local path = client.workspace_folders[1].name
+                    if vim.uv.fs_stat(path .. "/.luarc.json") or vim.uv.fs_stat(path .. "/.luarc.jsonc") then
+                        return
+                    end
+                end
+
+                client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+                    runtime = {
+                        -- Tell the language server which version of Lua you're using
+                        version = "LuaJIT",
+                        -- Setup your lua path
+                        path = vim.split(package.path, ";"),
+                    },
+                    diagnostics = {
+                        -- Get the language server to recognize the `vim` global
+                        globals = { "vim" },
+                    },
+                    workspace = {
+                        -- Make the server aware of Neovim runtime files
+                        library = {
+                            [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                            [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+                            [vim.fn.stdpath("config") .. "/lua"] = true,
+                        },
+                        checkThirdParty = false,
+                    },
+                    telemetry = { enable = false },
+                })
+            end,
+            settings = {
+                Lua = {},
+            },
         })
 
-        lspconfig.gopls.setup({
-            capabilities = capabilities,
+        local gopls_settings = vscode_settings["gopls"] or {}
+
+        lspconfig.gopls.setup {
+            cmd = { "gopls" },
+            filetypes = { "go", "gomod", "gowork", "gotmpl" },
             settings = {
                 gopls = {
-                    analyses = {
+                    analyses = gopls_settings["analyses"] or {
                         nilness = true,
                         unusedwrite = true,
                         useany = true,
@@ -39,13 +91,15 @@ return {
                         unusedparams = true,
                         unusedvariable = true,
                     },
+                    buildFlags = gopls_settings["buildFlags"] or {},
+                    env = gopls_settings["env"] or {},
+                    directoryFilters = gopls_settings["directoryFilters"] or {},
                     staticcheck = true,
                     gofumpt = true,
                     experimentalPostfixCompletions = true,
-                    usePlaceholders = true,
-                },
-            },
-        })
+                }
+            }
+        }
 
         lspconfig.html.setup({
             capabilities = capabilities,
@@ -60,7 +114,7 @@ return {
         })
 
         lspconfig.eslint.setup({
-            on_attach = function(client, bufnr)
+            on_attach = function(_, bufnr)
                 vim.api.nvim_create_autocmd("BufWritePre", {
                     buffer = bufnr,
                     command = "EslintFixAll",
@@ -81,6 +135,23 @@ return {
         lspconfig.hls.setup({
             capabilities = haskell_capabilities,
             filetypes = { 'haskell', 'lhaskell', 'cabal' },
+        })
+
+        lspconfig.jsonls.setup({
+            capabilities = capabilities,
+        })
+
+        lspconfig.yamlls.setup({
+            capabilities = capabilities,
+            settings = {
+                yaml = {
+                    schemaStore = {
+                        enable = false,
+                        url = "",
+                    },
+                    schemas = require("schemastore").yaml.schemas(),
+                },
+            },
         })
 
         -- key binding config --
@@ -133,6 +204,17 @@ return {
 
                 opts.desc = "Restart LSP"
                 keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+            end,
+        })
+
+        vim.api.nvim_create_augroup('haskell_settings', { clear = true })
+        vim.api.nvim_create_autocmd('FileType', {
+            group = 'haskell_settings',
+            pattern = { 'haskell', 'lhaskell' },
+            callback = function()
+                vim.opt_local.tabstop = 2
+                vim.opt_local.shiftwidth = 2
+                vim.opt_local.expandtab = true
             end,
         })
     end,

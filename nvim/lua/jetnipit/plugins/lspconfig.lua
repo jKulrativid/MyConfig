@@ -1,13 +1,3 @@
-local function get_vscode_settings()
-    local settings_file = vim.fn.getcwd() .. '/.vscode/settings.json'
-    if vim.fn.filereadable(settings_file) == 1 then
-        local contents = vim.fn.readfile(settings_file)
-        local settings = vim.fn.json_decode(table.concat(contents, '\n'))
-        return settings
-    end
-    return {}
-end
-
 return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
@@ -17,6 +7,9 @@ return {
         { "folke/neodev.nvim",                   opts = {} },
     },
     config = function()
+        -- utils
+        local utils = require("jetnipit.utils/utils")
+
         -- import lspconfig plugin
         local lspconfig = require("lspconfig")
         local lsputil = require("lspconfig.util")
@@ -34,7 +27,7 @@ return {
             vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
         end
 
-        local vscode_settings = get_vscode_settings()
+        local vscode_settings = utils.get_vscode_settings()
         if vscode_settings == nil then
             vscode_settings = {}
         end
@@ -77,6 +70,8 @@ return {
             },
         })
 
+        -- setting up gopls
+        local go_version = utils.get_go_version()
         local gopls_settings = vscode_settings["gopls"] or {}
 
         lspconfig.gopls.setup {
@@ -95,12 +90,13 @@ return {
                     },
                     buildFlags = gopls_settings["buildFlags"] or {},
                     directoryFilters = gopls_settings["directoryFilters"] or {},
-                    staticcheck = true,
-                    gofumpt = true,
+                    staticcheck = utils.compare_version(go_version, "1.22") >= 0,
+                    gofumpt = utils.compare_version(go_version, "1.22") >= 0,
                     experimentalPostfixCompletions = true,
                 }
             }
         }
+        -- end setting up gopls
 
         lspconfig.html.setup({
             capabilities = capabilities,

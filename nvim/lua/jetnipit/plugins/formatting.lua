@@ -61,14 +61,30 @@ return {
                         return { "prettierd" }
                     end,
                 },
+                formatters = {
+                    goimports_reviser = {
+                        command = "goimports-reviser",
+                        args = {
+                            "-imports-order std,general,company,project,blanked,dotted",
+                            "-company-prefixes",
+                            "-format",
+                            "$FILENAME",
+                        },
+                        stdin = false,
+                    },
+                    golines = {
+                        command = "golines",
+                        args = {
+                            "--max-len=120"
+                        }
+                    },
+                },
                 format_on_save = {
                     lsp_fallback = true,
                     async = false,
                     timeout_ms = 1000,
                 },
             })
-
-
 
             vim.keymap.set({ "n", "v" }, "<leader>mp", function()
                 conform.format({

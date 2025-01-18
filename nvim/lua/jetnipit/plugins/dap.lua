@@ -44,16 +44,6 @@ return {
                     },
                 })
             end
-
-            -- https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
-            dap.configurations.go = {
-                {
-                    type = "delve",
-                    name = "Debug",
-                    request = "launch",
-                    program = "${file}",
-                },
-            }
         end,
         -- stylua: ignore
         keys = {
@@ -82,6 +72,7 @@ return {
         config = function()
             require("dap-go").setup({
                 verbose = true,
+                root_dir = get_go_root_dir,
             })
         end,
         -- stylua: ignore

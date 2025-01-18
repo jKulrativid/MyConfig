@@ -19,6 +19,7 @@ return {
     config = function()
         -- import lspconfig plugin
         local lspconfig = require("lspconfig")
+        local lsputil = require("lspconfig.util")
 
         -- import cmp-nvim-lsp plugin
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
@@ -80,6 +81,7 @@ return {
 
         lspconfig.gopls.setup {
             cmd = { "gopls" },
+            root_dir = lsputil.root_pattern("go.mod", ".git"),
             filetypes = { "go", "gomod", "gowork", "gotmpl" },
             settings = {
                 gopls = {
@@ -92,7 +94,6 @@ return {
                         unusedvariable = true,
                     },
                     buildFlags = gopls_settings["buildFlags"] or {},
-                    env = gopls_settings["env"] or {},
                     directoryFilters = gopls_settings["directoryFilters"] or {},
                     staticcheck = true,
                     gofumpt = true,
@@ -192,6 +193,9 @@ return {
 
                 opts.desc = "Show line diagnostics"
                 keymap.set("n", "<leader>wx", vim.diagnostic.open_float, opts) -- show diagnostics for line
+
+                opts.desc = "Rename with LSP Power"
+                keymap.set("n", "<leader>cr", vim.lsp.buf.rename, opts)
 
                 -- opts.desc = "Go to previous diagnostic"
                 -- keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer

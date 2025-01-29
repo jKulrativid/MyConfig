@@ -6,6 +6,9 @@ keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
 
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlight" })
 
+-- override paste default behavior not to overwrite the clipboard
+keymap.set("v", "p", "P", { desc = "Paste without overwriting clipboard", noremap = true })
+
 -- inc/dec number
 keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
 keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })

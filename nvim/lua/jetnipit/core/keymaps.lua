@@ -15,6 +15,15 @@ keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
 
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down half screen" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up half screen" })
+
+-- Add zz (center cursor) as a post-hook to [[ and ]] commands
+vim.keymap.set("n", "[[", "[[zz", { desc = "Jump to previous section start and center" })
+vim.keymap.set("n", "]]", "]]zz", { desc = "Jump to next section start and center" })
+
+-- Add zz to all bracket navigation commands
+vim.keymap.set("n", "[]", "[]zz", { desc = "Jump to previous section end and center" })
+vim.keymap.set("n", "][", "][zz", { desc = "Jump to next section end and center" })
+
 vim.keymap.set("n", "n", "nzzzv", { desc = "Next word" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous word" })
 

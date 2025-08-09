@@ -60,6 +60,7 @@ return {
                         end
                         return { "prettierd" }
                     end,
+                    c = { "clang_format" },
                 },
                 formatters = {
                     goimports_reviser = {
@@ -78,6 +79,10 @@ return {
                             "--max-len=120"
                         }
                     },
+                    clang_format = {
+                        command = "clang-format",
+                        prepend_args = { '--style=file', '--fallback-style=LLVM' },
+                    }
                 },
                 format_on_save = {
                     lsp_fallback = true,

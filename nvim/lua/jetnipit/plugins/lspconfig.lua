@@ -151,6 +151,11 @@ return {
             },
         })
 
+        -- clang setup --
+        lspconfig.clangd.setup({
+            capabilities = capabilities,
+        })
+
         -- key binding config --
 
         local keymap = vim.keymap -- for conciseness

@@ -154,6 +154,7 @@ return {
         -- clang setup --
         lspconfig.clangd.setup({
             capabilities = capabilities,
+            file_types = { 'c', 'cpp', 'cxx', 'c++', 'h', 'hpp', 'hxx', 'h++', 'tpp' },
         })
 
         -- key binding config --

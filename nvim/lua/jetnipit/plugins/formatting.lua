@@ -61,6 +61,7 @@ return {
                         return { "prettierd" }
                     end,
                     c = { "clang_format" },
+                    cpp = { "clang_format" },
                 },
                 formatters = {
                     goimports_reviser = {
